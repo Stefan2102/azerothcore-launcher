@@ -2,6 +2,9 @@
 
 Windows desktop launcher for [AzerothCore](https://www.azerothcore.org/) servers. Start and stop MySQL, Authserver, Worldserver, and Ollama from one application, with live terminal output for each service.
 
+<img width="1919" height="1030" alt="image" src="https://github.com/user-attachments/assets/83091252-0026-451f-ba4f-0727b4de1166" />
+
+
 ## Features
 
 - Four integrated terminals (MySQL, Authserver, Worldserver, Ollama)
