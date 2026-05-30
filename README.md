@@ -9,7 +9,6 @@ Windows desktop launcher for [AzerothCore](https://www.azerothcore.org/) servers
 
 - Four integrated terminals (MySQL, Authserver, Worldserver, Ollama)
 - Start and stop services from the sidebar
-- Worldserver command input console commands
 - Settings for database credentials and executable paths
 - Launch World of Warcraft from the sidebar
 - Single-instance application
