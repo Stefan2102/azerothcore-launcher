@@ -1,0 +1,271 @@
+/* Icy WotLK palette — frost blues, pale highlights, cool neutrals */
+
+QMainWindow#MainWindow {
+    background: #060D17;
+}
+
+QWidget#Central {
+    background: #060D17;
+    color: #D8E6F2;
+    font-family: "Segoe UI";
+    font-size: 12px;
+}
+
+QFrame#Sidebar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #0A1522, stop:1 #060E1A);
+    border-right: 1px solid #3A5F82;
+}
+
+QLabel#Logo {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Sidebar buttons (shared icy server style) --- */
+
+QPushButton#SideAction,
+QPushButton#WowButton,
+QPushButton#SettingsButton,
+QPushButton#ExitButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #1A2D42, stop:0.45 #142638, stop:1 #0E1C2E);
+    border: 1px solid #5A8BB8;
+    border-radius: 6px;
+    color: #C8E4F8;
+    text-align: left;
+    padding-left: 12px;
+    font-weight: 600;
+}
+
+QPushButton#SideAction[running="true"] {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #1A4858, stop:0.45 #164850, stop:1 #103840);
+    border: 1px solid #68E0F0;
+    color: #D8FCFF;
+}
+
+QPushButton#SideAction:hover,
+QPushButton#SideAction[running="true"]:hover,
+QPushButton#WowButton:hover,
+QPushButton#SettingsButton:hover,
+QPushButton#ExitButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #2E5070, stop:0.45 #264860, stop:1 #1A3850);
+    border: 2px solid #A8D8FF;
+    color: #FFFFFF;
+    padding-left: 11px;
+}
+
+QFrame#Content {
+    background: #060D17;
+}
+
+/* --- Terminals (neutral icy frame, no accent borders) --- */
+
+QFrame#TerminalPanel {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #0C182A, stop:1 #07101C);
+    border: 1px solid #2A4560;
+    border-radius: 7px;
+}
+
+QFrame#StatusDot {
+    border-radius: 4px;
+    background: #6A9CC8;
+}
+
+QFrame#StatusDot[state="running"] {
+    background: #88D8F0;
+}
+
+QFrame#StatusDot[state="idle"] {
+    background: #6A9CC8;
+}
+
+QLabel#TerminalTitle {
+    color: #E0EEFF;
+    font-weight: 700;
+}
+
+QLabel#TerminalStatus {
+    color: #8FA8C4;
+    font-size: 11px;
+}
+
+QPlainTextEdit#TerminalOutput {
+    background: #050B14;
+    border: 1px solid #2A4560;
+    border-radius: 5px;
+    color: #D8E6F2;
+    selection-background-color: #2A4666;
+    selection-color: #F0F6FF;
+    padding: 4px;
+}
+
+QLineEdit#TerminalInput {
+    background: #050B14;
+    border: 1px solid #2A4560;
+    border-radius: 5px;
+    color: #D8E6F2;
+    padding: 6px 8px;
+}
+
+QLineEdit#TerminalInput:focus {
+    border-color: #6A9CC8;
+}
+
+QPushButton#TerminalSendButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #142030, stop:1 #0A1420);
+    border: 1px solid #3A5F82;
+    border-radius: 5px;
+    color: #A8C8E0;
+    min-width: 30px;
+}
+
+QPushButton#TerminalSendButton:hover {
+    border-color: #7EB0DC;
+    color: #E0F0FF;
+}
+
+/* --- Settings dialog (icy) --- */
+
+QDialog#SettingsDialog {
+    background: #060D17;
+    color: #D8E6F2;
+}
+
+QLabel#DialogTitle {
+    color: #E0EEFF;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+QFrame#SettingsPanel {
+    background: #0C182A;
+    border: 1px solid #3A5F82;
+    border-radius: 8px;
+}
+
+QLabel#SettingsSection {
+    color: #9AD9FF;
+    font-size: 13px;
+    font-weight: 700;
+    padding-top: 4px;
+}
+
+QFrame#SettingsSectionPanel {
+    background: transparent;
+}
+
+QLabel#SettingsLabel {
+    color: #C8DCF0;
+    font-weight: 600;
+}
+
+QSpinBox#SettingsSpin {
+    background: #050B14;
+    border: 1px solid #3A5F82;
+    border-radius: 5px;
+    color: #D8E6F2;
+    padding: 6px 8px;
+}
+
+QSpinBox#SettingsSpin:focus {
+    border-color: #7EB0DC;
+}
+
+QLineEdit#SettingsField {
+    background: #050B14;
+    border: 1px solid #3A5F82;
+    border-radius: 5px;
+    color: #D8E6F2;
+    padding: 8px;
+}
+
+QLineEdit#SettingsField:focus {
+    border-color: #7EB0DC;
+}
+
+QLabel#SettingsHint {
+    color: #E8A8B8;
+    font-size: 11px;
+}
+
+QPushButton#BrowseButton,
+QPushButton#SecondaryButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #1A2D42, stop:1 #0E1C2E);
+    border: 1px solid #5A8BB8;
+    border-radius: 6px;
+    color: #D8EEF8;
+    padding: 8px 12px;
+}
+
+QPushButton#PrimaryButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #3A6A98, stop:0.5 #2E5880, stop:1 #224870);
+    border: 1px solid #88C8F0;
+    border-radius: 6px;
+    color: #F0FAFF;
+    font-weight: 700;
+    padding: 8px 18px;
+}
+
+QPushButton#BrowseButton:hover,
+QPushButton#SecondaryButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #223A52, stop:1 #122438);
+    border-color: #7EB0DC;
+    color: #F0F8FF;
+}
+
+QPushButton#PrimaryButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #4A7AAA, stop:0.5 #3A6890, stop:1 #2E5880);
+    border-color: #A8E0FF;
+}
+
+QScrollBar:vertical {
+    background: #050B14;
+    width: 5px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #3A6088;
+    border-radius: 2px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #5080B0;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar:horizontal {
+    background: #050B14;
+    height: 5px;
+    margin: 0;
+}
+
+QScrollBar::handle:horizontal {
+    background: #3A6088;
+    border-radius: 2px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #5080B0;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0;
+}
