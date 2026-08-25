@@ -1,0 +1,8 @@
+node_modules/
+dist-web/
+dist/
+src-tauri/target/
+.idea/
+.vscode/
+*.log
+*.tsbuildinfo

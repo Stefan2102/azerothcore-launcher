@@ -1,0 +1,984 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  color: var(--text);
+  background: var(--canvas);
+  --accent: #2de1ff;
+  --accent-soft: #8cf2ff;
+  --accent-rgb: 45 225 255;
+  --canvas: #041a33;
+  --canvas-glow: #0d5790;
+  --workspace-background: #061f3b;
+  --sidebar-top: #082e52;
+  --sidebar-bottom: #031326;
+  --surface: #0a3156;
+  --surface-raised: #0d426f;
+  --panel-top: #0a2f51;
+  --panel-bottom: #06182b;
+  --terminal: #04172a;
+  --border: #1678a9;
+  --border-bright: #2de1ff;
+  --text: #ecfbff;
+  --text-muted: #9bcde0;
+  --field-background: #04172a;
+  --field-text: #e9fbff;
+  --field-placeholder: #6fa1b8;
+  --modal-top: #0c3d68;
+  --modal-bottom: #051b31;
+  --modal-backdrop: rgb(1 10 21 / 72%);
+  --settings-divider: rgb(45 225 255 / 25%);
+  --settings-heading: #dff9ff;
+  --settings-description: #8ebcd0;
+  --focus: #8cf2ff;
+  --danger: #2de1ff;
+  --status-idle: #6f8390;
+  --status-running: #62d9a5;
+  --status-transition: #f0a14a;
+  --control-border: #1678a9;
+  --control-border-hover: #2de1ff;
+  --control-surface-top: rgb(14 74 122 / 92%);
+  --control-surface-bottom: rgb(8 43 74 / 97%);
+  --control-hover-top: rgb(18 99 157 / 96%);
+  --control-hover-bottom: rgb(7 56 94 / 99%);
+  --control-running-top: rgb(13 83 126 / 97%);
+  --control-running-bottom: rgb(5 42 70 / 99%);
+  --control-transition-top: rgb(14 83 132 / 96%);
+  --control-transition-bottom: rgb(5 46 79 / 99%);
+  --brand-divider: rgb(var(--accent-rgb) / 24%);
+  --important-action-top: #1a9dcc;
+  --important-action-bottom: #0b5f91;
+  --window-surface: rgb(7 48 82 / 88%);
+  --panel-shadow: rgb(0 5 15 / 30%);
+  --ui-scrollbar-track: #05192d;
+  --ui-scrollbar-thumb: #1678a9;
+  --ui-scrollbar-hover: #2de1ff;
+  --control-motion-fast: 130ms;
+  --control-motion: 150ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+button,
+input {
+  appearance: none;
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Text fields already have a clear bounded surface. Avoid adding an external
+   focus frame that visually reads as a duplicate border in the dense settings
+   form while retaining the standard border and keyboard editing behavior. */
+input:focus-visible {
+  outline: none;
+}
+
+/* Every interactive control shares the same WebView-rendered glass surface.
+   Variants below change emphasis without duplicating interaction mechanics. */
+.control-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  color: var(--text);
+  background: linear-gradient(
+    180deg,
+    var(--control-surface-top),
+    var(--control-surface-bottom)
+  );
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 7%),
+    0 5px 14px rgb(0 0 0 / 17%);
+  cursor: pointer;
+  user-select: none;
+  transform: translateZ(0);
+  transition:
+    color var(--control-motion-fast) ease,
+    border-color var(--control-motion) ease,
+    background var(--control-motion) ease,
+    box-shadow var(--control-motion) ease,
+    opacity var(--control-motion-fast) ease,
+    transform var(--control-motion-fast) ease;
+  -webkit-backdrop-filter: blur(9px) saturate(118%);
+  backdrop-filter: blur(9px) saturate(118%);
+}
+
+/* A one-pixel inner highlight gives the glass depth without covering content. */
+.control-button::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 1px rgb(255 255 255 / 7%);
+  content: "";
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .control-button:hover:not(:disabled) {
+    border-color: var(--control-border-hover);
+    background: linear-gradient(
+      180deg,
+      var(--control-hover-top),
+      var(--control-hover-bottom)
+    );
+    box-shadow:
+      inset 0 1px rgb(255 255 255 / 11%),
+      0 7px 19px rgb(0 0 0 / 24%),
+      0 0 15px rgb(var(--accent-rgb) / 18%);
+    transform: translateY(-1px);
+  }
+}
+
+.control-button:active:not(:disabled) {
+  box-shadow:
+    inset 0 2px 7px rgb(0 0 0 / 34%),
+    0 2px 7px rgb(0 0 0 / 18%);
+  transform: translateY(0) scale(0.985);
+  transition-duration: 70ms;
+}
+
+.control-button:disabled {
+  cursor: not-allowed;
+  filter: saturate(72%);
+  opacity: 0.56;
+  transform: none;
+}
+
+.app-shell {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 1180px;
+  min-height: 720px;
+  background:
+    radial-gradient(circle at 58% -10%, var(--canvas-glow) 0, transparent 34%),
+    var(--canvas);
+}
+
+.window-controls {
+  position: fixed;
+  z-index: 40;
+  top: 7px;
+  right: 8px;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--window-surface);
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 5%),
+    0 6px 18px rgb(0 0 0 / 26%);
+  backdrop-filter: blur(9px);
+}
+
+.window-control {
+  display: grid;
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-right: 1px solid rgb(var(--accent-rgb) / 22%);
+  border-radius: 0;
+  color: var(--text-muted);
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  place-items: center;
+}
+
+.window-control:last-child {
+  border-right: 0;
+}
+
+.window-control:hover {
+  color: var(--text);
+  background: linear-gradient(
+    180deg,
+    var(--control-hover-top),
+    var(--control-hover-bottom)
+  );
+  box-shadow: inset 0 1px rgb(255 255 255 / 8%);
+  transform: none;
+}
+
+.window-control--close:hover {
+  color: var(--text);
+  background: linear-gradient(180deg, var(--accent), var(--border-bright));
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 14%),
+    0 0 14px rgb(var(--accent-rgb) / 24%);
+}
+
+.sidebar {
+  display: flex;
+  flex: 0 0 360px;
+  flex-direction: column;
+  padding: 16px 10px 12px;
+  border-right: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--sidebar-top), var(--sidebar-bottom));
+  box-shadow: 12px 0 30px rgb(0 0 0 / 18%);
+}
+
+.brand {
+  position: relative;
+  display: flex;
+  min-height: 174px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  user-select: none;
+}
+
+/* A low-contrast rule separates branding from controls without adding another
+   interactive element or changing the fixed brand area's dimensions. */
+.brand::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--brand-divider) 14%,
+    var(--brand-divider) 86%,
+    transparent
+  );
+  content: "";
+  pointer-events: none;
+}
+
+/* Child elements ignore pointer targeting so the parent consistently receives
+   Windows drag-region and double-click events across the complete brand area. */
+.brand > * {
+  pointer-events: none;
+}
+
+.brand__logo {
+  display: block;
+  width: 118px;
+  height: auto;
+  max-height: 112px;
+  object-fit: contain;
+  filter: drop-shadow(0 9px 14px rgb(var(--accent-rgb) / 22%));
+}
+
+.brand__title {
+  margin-top: 3px;
+  color: var(--text);
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.brand__subtitle {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 4.5px;
+  text-transform: uppercase;
+}
+
+.sidebar__actions,
+.sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sidebar__footer {
+  margin-top: auto;
+}
+
+.side-button {
+  display: flex;
+  width: 100%;
+  height: 44px;
+  align-items: center;
+  gap: 13px;
+  padding: 0 14px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 650;
+  text-align: left;
+}
+
+.side-button::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--accent);
+  content: "";
+  opacity: 0;
+  transition:
+    background-color var(--control-motion) ease,
+    opacity var(--control-motion) ease;
+}
+
+.side-button svg {
+  flex: none;
+  color: var(--accent);
+  transition: color 150ms ease;
+}
+
+.side-button:hover:not(:disabled) {
+  border-color: var(--control-border-hover);
+}
+
+.side-button:hover:not(:disabled)::before,
+.side-button[data-running="true"]::before {
+  opacity: 1;
+}
+
+.side-button:hover:not(:disabled) svg,
+.side-button[data-running="true"] svg {
+  color: var(--accent-soft);
+}
+
+.side-button[data-running="true"] {
+  border-color: var(--border-bright);
+  background: linear-gradient(
+    180deg,
+    var(--control-running-top),
+    var(--control-running-bottom)
+  );
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 9%),
+    inset 3px 0 var(--accent),
+    0 6px 17px rgb(0 0 0 / 21%);
+}
+
+.side-button[data-transitioning="true"] {
+  border-color: var(--control-border-hover);
+  background:
+    linear-gradient(
+      105deg,
+      transparent 30%,
+      rgb(var(--accent-rgb) / 13%) 48%,
+      transparent 66%
+    ),
+    linear-gradient(
+      180deg,
+      var(--control-transition-top),
+      var(--control-transition-bottom)
+    );
+  background-position: 100% 0, 0 0;
+  background-size: 220% 100%, 100% 100%;
+  animation: control-sheen 1.45s ease-in-out infinite;
+  cursor: progress;
+  filter: none;
+  opacity: 0.78;
+}
+
+.side-button[data-transitioning="true"]::before {
+  background: var(--accent);
+  opacity: 1;
+}
+
+.side-button--danger svg {
+  color: var(--danger);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .side-button--danger:hover:not(:disabled) {
+    border-color: var(--accent-soft);
+    background: linear-gradient(
+      180deg,
+      var(--control-hover-top),
+      var(--control-hover-bottom)
+    );
+  }
+}
+
+@keyframes control-sheen {
+  0%,
+  24% {
+    background-position: 100% 0, 0 0;
+  }
+
+  76%,
+  100% {
+    background-position: -100% 0, 0 0;
+  }
+}
+
+.terminal-grid {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  /* Keep the upper-right terminal clear of the compact window controls. */
+  padding: 42px 20px 20px;
+  background: var(--workspace-background);
+}
+
+.terminal-panel {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--panel-top), var(--panel-bottom));
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 3%),
+    0 7px 22px var(--panel-shadow);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.terminal-panel[data-state="running"] {
+  border-color: var(--border);
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 4%),
+    0 7px 22px var(--panel-shadow);
+}
+
+.terminal-panel__header {
+  display: flex;
+  height: 24px;
+  flex: none;
+  align-items: center;
+  gap: 7px;
+}
+
+.terminal-panel__header h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--status-idle);
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 2%);
+}
+
+.terminal-panel[data-state="running"] .status-dot {
+  background: var(--status-running);
+  box-shadow: 0 0 9px rgb(98 217 165 / 72%);
+  animation: running-pulse 2s ease-in-out infinite;
+}
+
+.terminal-panel[data-state="starting"] .status-dot,
+.terminal-panel[data-state="stopping"] .status-dot {
+  background: var(--status-transition);
+  box-shadow: 0 0 8px rgb(255 118 45 / 50%);
+}
+
+@keyframes running-pulse {
+  50% { box-shadow: 0 0 14px rgb(98 217 165 / 92%); }
+}
+
+.terminal-panel__viewport {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  padding: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--terminal);
+  cursor: default;
+}
+
+/* Console output remains selectable, but these read-only terminals should not
+   suggest that typing can edit their service logs. */
+.terminal-panel__host,
+.terminal-panel__host .xterm,
+.terminal-panel__host .xterm-screen,
+.terminal-panel__host .xterm-rows,
+.terminal-panel__host .xterm-viewport {
+  cursor: default;
+}
+
+/* This undecorated box is the exact client area measured by FitAddon. */
+.terminal-panel__host {
+  width: calc(100% - var(--terminal-scrollbar-width));
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin-left: var(--terminal-scrollbar-width);
+}
+
+.terminal-panel__host .xterm,
+.terminal-panel__host .xterm-screen {
+  height: 100%;
+}
+
+/*
+ * Reserve the scrollbar inside xterm's layout and center any fractional-cell
+ * remainder. Combined with the matching left gutter on the host, this keeps
+ * the visible text area equally inset from both sides of the frame.
+ */
+.terminal-panel__host .xterm-scrollable-element {
+  padding-right: var(--terminal-scrollbar-width);
+}
+
+.terminal-panel__host .xterm-screen {
+  margin-inline: auto;
+}
+
+/*
+ * xterm 6 couples scrollbar sizing to its overview-ruler option. The launcher
+ * needs that option so both xterm and FitAddon reserve the same 4px gutter,
+ * but it does not use overview decorations. Hiding only the overlay canvas
+ * prevents its outline from covering the final terminal column while leaving
+ * the actual scrollbar and terminal measurements intact.
+ */
+.terminal-panel__host .xterm-decoration-overview-ruler {
+  display: none !important;
+}
+
+/*
+ * xterm renders its own themed scrollbar. Hide the WebView's native overlay
+ * scrollbar so its short gray thumb cannot appear over the terminal corner.
+ */
+.terminal-panel__host .xterm-viewport {
+  -ms-overflow-style: none;
+  /* Whole terminal rows can leave a few pixels unused at the bottom. */
+  background-color: var(--terminal);
+  scrollbar-width: none;
+}
+
+.terminal-panel__host .xterm-viewport::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.terminal-input {
+  display: flex;
+  height: 33px;
+  flex: none;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.terminal-input input,
+.settings-field input {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--field-text);
+  background: var(--field-background);
+}
+
+.terminal-input input {
+  flex: 1;
+  padding: 0 10px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 12px;
+}
+
+.terminal-input input::placeholder,
+.settings-field input::placeholder {
+  color: var(--field-placeholder);
+}
+
+.terminal-input input:disabled {
+  opacity: 0.55;
+}
+
+.terminal-input button,
+.icon-button {
+  display: inline-grid;
+  color: var(--accent-soft);
+  place-items: center;
+}
+
+.terminal-input button {
+  width: 34px;
+}
+
+.terminal-input button:hover:not(:disabled),
+.icon-button:hover {
+  color: var(--text);
+}
+
+.terminal-input button:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  width: min(520px, 100%);
+  max-height: calc(100vh - 56px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  scrollbar-color: var(--ui-scrollbar-thumb) var(--ui-scrollbar-track);
+  scrollbar-width: thin;
+  border: 1px solid var(--border-bright);
+  border-radius: 10px;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--modal-top), var(--modal-bottom));
+  box-shadow:
+    0 25px 70px rgb(0 0 0 / 45%),
+    0 0 30px rgb(var(--accent-rgb) / 12%);
+}
+
+.modal--wide {
+  width: min(760px, 100%);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 10px 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal__header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.icon-button {
+  width: 34px;
+  height: 34px;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px 20px;
+}
+
+.button,
+.browse-button {
+  font-weight: 700;
+}
+
+.modal::backdrop {
+  background: var(--modal-backdrop);
+  backdrop-filter: blur(4px);
+}
+
+/* WebView2 otherwise exposes the native Windows scrollbar, including arrow
+   buttons that conflict with the borderless, themed dialog surface. */
+.modal::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.modal::-webkit-scrollbar-track {
+  margin-block: 6px;
+  border-radius: 999px;
+  background: var(--ui-scrollbar-track);
+}
+
+.modal::-webkit-scrollbar-thumb {
+  min-height: 38px;
+  border: 1px solid var(--ui-scrollbar-track);
+  border-radius: 999px;
+  background: var(--ui-scrollbar-thumb);
+}
+
+.modal::-webkit-scrollbar-thumb:hover {
+  background: var(--ui-scrollbar-hover);
+}
+
+.modal::-webkit-scrollbar-button,
+.modal::-webkit-scrollbar-corner {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+.button {
+  min-width: 92px;
+  padding: 9px 16px;
+}
+
+.button--primary,
+.button--danger {
+  border-color: #29c5e7;
+  color: var(--text);
+  background: linear-gradient(
+    180deg,
+    var(--important-action-top),
+    var(--important-action-bottom)
+  );
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 14%),
+    0 7px 18px rgb(0 0 0 / 22%),
+    0 0 13px rgb(var(--accent-rgb) / 17%);
+}
+
+.button--primary:hover:not(:disabled),
+.button--danger:hover:not(:disabled) {
+  border-color: var(--accent-soft);
+  background: linear-gradient(180deg, #30c5e9, #0d78ad);
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 17%),
+    0 8px 21px rgb(0 0 0 / 25%),
+    0 0 17px rgb(var(--accent-rgb) / 24%);
+}
+
+.button--secondary,
+.browse-button {
+  color: var(--text);
+  background: linear-gradient(
+    180deg,
+    var(--control-surface-top),
+    var(--control-surface-bottom)
+  );
+}
+
+.button--secondary:hover,
+.browse-button:hover {
+  border-color: var(--control-border-hover);
+  background: linear-gradient(
+    180deg,
+    var(--control-hover-top),
+    var(--control-hover-bottom)
+  );
+}
+
+.button:disabled {
+  cursor: progress;
+}
+
+.alert-content {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 22px 20px 5px;
+  color: var(--text);
+}
+
+.alert-content > svg {
+  flex: none;
+  color: var(--accent);
+}
+
+.alert-content p {
+  margin: 2px 0 0;
+  white-space: pre-wrap;
+}
+
+.alert-content ul {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: var(--text);
+}
+
+.settings-loading {
+  padding: 32px 20px;
+  color: var(--text-muted);
+}
+
+.settings-form {
+  padding: 4px 20px 0;
+}
+
+.settings-section {
+  margin: 0;
+  padding: 15px 0;
+}
+
+.settings-section + .settings-section {
+  border-top: 1px solid var(--settings-divider);
+}
+
+.settings-section__header {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.settings-section__header h3,
+.settings-section__header p {
+  margin: 0;
+}
+
+.settings-section__header h3 {
+  color: var(--settings-heading);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.settings-section__header p {
+  color: var(--settings-description);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.settings-section__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 14px;
+}
+
+.settings-field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.settings-field--path {
+  grid-column: 1 / -1;
+}
+
+.settings-section--paths .settings-section__fields {
+  gap: 8px;
+}
+
+.settings-field input {
+  /* Database inputs are vertical flex children, so they must not inherit the
+     horizontal flex growth used by path inputs beside Browse buttons. */
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  flex: none;
+  padding: 0 9px;
+  font-size: 13px;
+}
+
+/* Keep numeric validation and mobile/keyboard semantics without exposing
+   WebView2's native increment arrows inside the themed settings fields. */
+.settings-field input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.settings-field input[type="number"]::-webkit-inner-spin-button,
+.settings-field input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.settings-field small {
+  min-height: 13px;
+  color: var(--accent-soft);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 13px;
+}
+
+.settings-field__input-action {
+  position: relative;
+  display: block;
+}
+
+.settings-field__input-action input {
+  padding-right: 42px;
+}
+
+.settings-password-toggle {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  place-items: center;
+}
+
+.settings-field__path-row {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-field__path-row input {
+  /* Only path inputs consume the remaining row width next to Browse. */
+  width: auto;
+  flex: 1;
+}
+
+.browse-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.settings-form__actions {
+  margin: 0 -20px;
+  border-top: 1px solid var(--border);
+}
+
+/* Settings actions are adjacent confirmation controls, not primary launcher
+   actions, so they use a compact footprint while retaining the shared glass
+   interaction and accessible focus treatment. */
+.settings-form__actions .button {
+  min-width: 80px;
+  height: 34px;
+  padding: 0 13px;
+}
+
+.startup-overlay {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  color: var(--text);
+  background: var(--canvas);
+  font-size: 14px;
+  place-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .control-button:hover:not(:disabled),
+  .control-button:active:not(:disabled) {
+    transform: none !important;
+  }
+
+  .side-button[data-transitioning="true"] {
+    animation: none !important;
+    background-position: 0 0, 0 0;
+  }
+}
